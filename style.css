@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#nummerEins{
+    position: fixed;
+    background-color: palevioletred;
+    width: 50vw;
+    height: 50vh;
+    left: 0;
+    top: 0;
+}
+
+#nummerZwei{
+    position: fixed;
+    background-color: rgb(196, 196, 196);
+    width: 50vw;
+    height: 50vh;
+    left: 0;
+    bottom: 0;   
+}
+
+#nummerDrei{
+    position: fixed;
+    background-color: rgb(218, 144, 233);
+    width: 50vw;
+    height: 50vh;
+    top: 0;
+    right:0;
+
+}
+
+#nummerVier{
+    position: fixed;
+    background-color: paleturquoise;
+    width: 50vw;
+    height: 50vh;   
+    right:0;
+    bottom: 0;
+}
