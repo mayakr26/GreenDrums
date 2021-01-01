@@ -12,4 +12,4 @@ def sendControlChange(control):
     midiOutput.send(message)
 
 
-# sendControlChange(n) -> wenn der farbige Stift in Zone n ist
+# sendControlChange(n) -> wenn der farbige Stift in Zone n ist -> das muss dann in die Datei, wo geprüft wird, ob der Stift in einer der Zonen ist
