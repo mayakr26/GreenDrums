@@ -5,7 +5,7 @@ import mido
 import time
 
 print("Midi output ports: ", mido.get_output_names())
-midiOutput = mido.open_output("IAC Driver Bus 1")
+midiOutput = mido.open_output("IAC-Treiber Bus 1")
 
 def sendControlChange(control):
     message = mido.Message('control_change', control=control)
