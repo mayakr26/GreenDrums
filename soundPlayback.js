@@ -12,6 +12,7 @@ function startSound(x) {
 
                 sourceBufferNode.connect(context.destination);
                 sourceBufferNode.start(context.currentTime);
+                sourceBufferNode.stop(context.currentTime+1);
             })
             .catch(console.error);
             break;
@@ -25,6 +26,7 @@ function startSound(x) {
 
                 sourceBufferNode.connect(context.destination);
                 sourceBufferNode.start(context.currentTime);
+                sourceBufferNode.stop(context.currentTime+1);
             })
             .catch(console.error);
             break;
@@ -38,6 +40,7 @@ function startSound(x) {
 
                 sourceBufferNode.connect(context.destination);
                 sourceBufferNode.start(context.currentTime);
+                sourceBufferNode.stop(context.currentTime+1);
             })
             .catch(console.error);
             break;
@@ -51,6 +54,7 @@ function startSound(x) {
 
                 sourceBufferNode.connect(context.destination);
                 sourceBufferNode.start(context.currentTime);
+                sourceBufferNode.stop(context.currentTime+1);
             })
             .catch(console.error);
             break;

@@ -18,7 +18,7 @@ function onMIDIMessage(event) {
     // event.data[0] = on (144) / off (128) / controlChange (176)  / pitchBend (224) / ...
     // event.data[1] = midi note
     // event.data[2] = velocity
-    console.log(event);
+
 
     switch (event.data[0]) {
         case 144:
@@ -31,7 +31,6 @@ function onMIDIMessage(event) {
             //stopNote(event.data[1], event.data[2]);
             break;
         case 176:
-            console.log(event);
             // your function controlChange(controllerNr, value)
             break;
         case 224:

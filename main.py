@@ -78,8 +78,8 @@ while True:
         maxlength = np.max(contourLength)
         if maxlength > csize:
             print('links unten')
-            if not nodeOnUpperLeft:
-                nodeOnUpperLeftHasChanged = True
+            if not nodeOnLowerLeft:
+                nodeOnLowerLeftHasChanged = True
             nodeOnLowerLeft = True
         else:
             nodeOnLowerLeft = False

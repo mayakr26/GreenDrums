@@ -7,5 +7,4 @@ midiOutput = mido.open_output("IAC-Treiber Bus 1")
 
 
 def send_control_change(control):
-    midiOutput.send(mido.Message('control_change', control=7, value=64))
     midiOutput.send(mido.Message('note_on', note=control, velocity=127))
