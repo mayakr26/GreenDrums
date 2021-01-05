@@ -51,8 +51,9 @@ while True:
             contourLength[index] = cv2.contourArea(contours[index])
         maxlength = np.max(contourLength)
         if maxlength > csize:
-            print('links oben')
+
             if not nodeOnUpperLeft:
+                print('links oben')
                 nodeOnUpperLeftHasChanged = True
             nodeOnUpperLeft = True
         else:
@@ -77,8 +78,9 @@ while True:
             contourLength[index] = cv2.contourArea(contours[index])
         maxlength = np.max(contourLength)
         if maxlength > csize:
-            print('links unten')
+
             if not nodeOnLowerLeft:
+                print('links unten')
                 nodeOnLowerLeftHasChanged = True
             nodeOnLowerLeft = True
         else:
@@ -103,8 +105,9 @@ while True:
             contourLength[index] = cv2.contourArea(contours[index])
         maxlength = np.max(contourLength)
         if maxlength > csize:
-            print('rechts oben')
+
             if not nodeOnUpperRight:
+                print('rechts oben')
                 nodeOnUpperRightHasChanged = True
             nodeOnUpperRight = True
         else:
@@ -129,9 +132,8 @@ while True:
             contourLength[index] = cv2.contourArea(contours[index])
         maxlength = np.max(contourLength)
         if maxlength > csize:
-            print('rechts unten')
-
             if not nodeOnLowerRight:
+                print('rechts unten')
                 nodeOnLowerRightHasChanged = True
             nodeOnLowerRight = True
         else:
