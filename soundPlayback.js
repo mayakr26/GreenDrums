@@ -1,6 +1,6 @@
 let context = new AudioContext();
 
-function startSound() {
+function startSound(x) {
     switch (x) {
         case 1:
             fetch("drumsounds/sound1.wav")
