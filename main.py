@@ -2,14 +2,26 @@ import cv2
 import numpy as np
 import midi
 
-# width 640 and height 480
-foreground1 = np.ones((240, 320, 3), dtype='uint8') * 255
-foreground2 = np.ones((240, 320, 3), dtype='uint8') * 175
-foreground3 = np.ones((240, 320, 3), dtype='uint8') * 100
-foreground4 = np.ones((240, 320, 3), dtype='uint8') * 25
+
 
 # Open the camera
 cap = cv2.VideoCapture(0)
+
+# Calculate camera width and height
+cameraWidth = int(round(cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
+cameraHeight = int(round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
+cameraWidthHalf = int(round(cameraWidth)) // 2
+cameraWidthThird = int(round(cameraWidth)) // 3
+cameraWidthSixth = int(round(cameraWidth)) // 6
+cameraHeightHalf = int(round(cameraHeight)) // 2
+cameraHeightThird = int(round(cameraHeight)) // 3
+cameraHeightSixth = int(round(cameraHeight)) // 6
+
+foreground2 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 175
+foreground1 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 255
+foreground3 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 100
+foreground4 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 25
 
 # Set initial value of weights
 alpha = 0.7
@@ -36,7 +48,7 @@ while True:
     # hier kommt code
 
     # oben links
-    imageslice1 = background[0:240, 0:320, :]
+    imageslice1 = background[0:cameraHeightHalf, 0:cameraWidthHalf, :]
     mask1 = np.copy(imageslice1)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -66,7 +78,7 @@ while True:
             nodeOnUpperLeft = False
 
     # links unten
-    imageslice2 = background[240:480, 0:320, :]
+    imageslice2 = background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf, :]
     mask2 = np.copy(imageslice2)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -96,7 +108,7 @@ while True:
             nodeOnLowerLeft = False
 
     # rechts oben
-    imageslice3 = background[0:240, 320:640, :]
+    imageslice3 = background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth, :]
     mask3 = np.copy(imageslice3)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -126,7 +138,7 @@ while True:
             nodeOnUpperRight = False
 
     # rechts unten
-    imageslice4 = background[240:480, 320:640, :]
+    imageslice4 = background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth, :]
     mask4 = np.copy(imageslice4)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -156,16 +168,16 @@ while True:
 
     #######################################################################
     # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-    added_image1 = cv2.addWeighted(background[0:240, 0:320, :], alpha, foreground1[0:240, 0:320, :], 1 - alpha, 0)
-    added_image2 = cv2.addWeighted(background[240:480, 0:320, :], alpha, foreground2[0:240, 0:320, :], 1 - alpha, 0)
-    added_image3 = cv2.addWeighted(background[0:240, 320:640, :], alpha, foreground3[0:240, 0:320, :], 1 - alpha, 0)
-    added_image4 = cv2.addWeighted(background[240:480, 320:640, :], alpha, foreground4[0:240, 0:320, :], 1 - alpha, 0)
+    added_image1 = cv2.addWeighted(background[0:cameraHeightHalf, 0:cameraWidthHalf, :], alpha, foreground1[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
+    added_image2 = cv2.addWeighted(background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf, :], alpha, foreground2[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
+    added_image3 = cv2.addWeighted(background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth, :], alpha, foreground3[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
+    added_image4 = cv2.addWeighted(background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth, :], alpha, foreground4[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
 
     # Change the region with the result
-    background[0:240, 0:320] = added_image1
-    background[240:480, 0:320] = added_image2
-    background[0:240, 320:640] = added_image3
-    background[240:480, 320:640] = added_image4
+    background[0:cameraHeightHalf, 0:cameraWidthHalf] = added_image1
+    background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf] = added_image2
+    background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth] = added_image3
+    background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth] = added_image4
 
     if nodeOnUpperLeftHasChanged:
         midi.send_control_change(1)
