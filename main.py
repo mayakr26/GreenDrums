@@ -3,11 +3,10 @@ import numpy as np
 import midi
 
 
-
 # Open the camera
 cap = cv2.VideoCapture(0)
 
-# Calculate camera width and height
+# Get camera width and height
 cameraWidth = int(round(cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
 cameraHeight = int(round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
