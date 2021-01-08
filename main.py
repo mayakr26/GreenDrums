@@ -13,6 +13,7 @@ cameraHeight = int(round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 cameraWidthHalf = int(round(cameraWidth)) // 2
 cameraWidthThird = int(round(cameraWidth)) // 3
 cameraWidthSixth = int(round(cameraWidth)) // 6
+
 cameraHeightHalf = int(round(cameraHeight)) // 2
 cameraHeightThird = int(round(cameraHeight)) // 3
 cameraHeightSixth = int(round(cameraHeight)) // 6
@@ -38,6 +39,21 @@ nodeOnUpperRightHasChanged = False
 nodeOnLowerLeftHasChanged = False
 nodeOnLowerRightHasChanged = False
 
+
+def createMask(imageslice):
+    mask = np.copy(imageslice)
+
+    # Erstellung einer Maske durch HSV-Farberkennung
+    hsv = cv2.cvtColor(mask, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    hslice = cv2.inRange(h, 50, 70)
+    hslice = cv2.medianBlur(hslice, msize)
+    sslice = cv2.inRange(s, 60, 120)
+    sslice = cv2.medianBlur(sslice, msize)
+    mask = cv2.bitwise_and(hslice, sslice)
+    return mask
+
+
 while True:
     # read the background
     ret, background = cap.read()
@@ -47,17 +63,8 @@ while True:
     # hier kommt code
 
     # oben links
-    imageslice1 = background[0:cameraHeightHalf, 0:cameraWidthHalf, :]
-    mask1 = np.copy(imageslice1)
-
-    # Erstellung einer Maske durch HSV-Farberkennung
-    hsv = cv2.cvtColor(mask1, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
-    hslice = cv2.medianBlur(hslice, msize)
-    sslice = cv2.inRange(s, 60, 120)
-    sslice = cv2.medianBlur(sslice, msize)
-    mask1 = cv2.bitwise_and(hslice, sslice)
+    imageslice1 = background[0:cameraHeightHalf, 0:cameraWidthThird, :]
+    mask1 = createMask(imageslice1)
 
     # Contour-Erkennung
     # Größte Contour berechnen. Falls groß genug -> trigger
@@ -77,7 +84,7 @@ while True:
             nodeOnUpperLeft = False
 
     # links unten
-    imageslice2 = background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf, :]
+    imageslice2 = background[cameraHeightHalf:cameraHeight, 0:cameraWidthThird, :]
     mask2 = np.copy(imageslice2)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -107,7 +114,7 @@ while True:
             nodeOnLowerLeft = False
 
     # rechts oben
-    imageslice3 = background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth, :]
+    imageslice3 = background[0:cameraHeightHalf, cameraWidthHalf+cameraWidthSixth:cameraWidth, :]
     mask3 = np.copy(imageslice3)
 
     # Erstellung einer Maske durch HSV-Farberkennung
@@ -167,14 +174,14 @@ while True:
 
     #######################################################################
     # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-    added_image1 = cv2.addWeighted(background[0:cameraHeightHalf, 0:cameraWidthHalf, :], alpha, foreground1[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
-    added_image2 = cv2.addWeighted(background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf, :], alpha, foreground2[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
+    added_image1 = cv2.addWeighted(imageslice1, alpha, foreground1[0:cameraHeightHalf, 0:cameraWidthThird, :], 1 - alpha, 0)
+    added_image2 = cv2.addWeighted(imageslice2, alpha, foreground2[0:cameraHeightHalf, 0:cameraWidthThird, :], 1 - alpha, 0)
     added_image3 = cv2.addWeighted(background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth, :], alpha, foreground3[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
     added_image4 = cv2.addWeighted(background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth, :], alpha, foreground4[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
 
     # Change the region with the result
-    background[0:cameraHeightHalf, 0:cameraWidthHalf] = added_image1
-    background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf] = added_image2
+    background[0:cameraHeightHalf, 0:cameraWidthThird] = added_image1
+    background[cameraHeightHalf:cameraHeight, 0:cameraWidthThird] = added_image2
     background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth] = added_image3
     background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth] = added_image4
 
