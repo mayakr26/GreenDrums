@@ -18,10 +18,10 @@ cameraHeightHalf = int(round(cameraHeight)) // 2
 cameraHeightThird = int(round(cameraHeight)) // 3
 cameraHeightSixth = int(round(cameraHeight)) // 6
 
-foreground2 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 175
-foreground1 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 255
-foreground3 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 100
-foreground4 = np.ones((cameraHeightHalf, cameraWidthHalf, 3), dtype='uint8') * 25
+foreground1 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 255
+foreground2 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 175
+foreground3 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 100
+foreground4 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 70
 
 # Set initial value of weights
 alpha = 0.7
@@ -53,21 +53,17 @@ def createMask(imageslice):
     mask = cv2.bitwise_and(hslice, sslice)
     return mask
 
-
+            
 while True:
     # read the background
     ret, background = cap.read()
     background = cv2.flip(background, 1)
-
-    ###########################################################################
-    # hier kommt code
+    
 
     # oben links
-    imageslice1 = background[0:cameraHeightHalf, 0:cameraWidthHalf, :]
+    imageslice1 = background[0:cameraHeightHalf, 0:cameraWidthThird, :]
     mask1 = createMask(imageslice1)
 
-    # Contour-Erkennung
-    # Größte Contour berechnen. Falls groß genug -> trigger
     contours, hierarchy = cv2.findContours(mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) > 0:
         contourLength = np.zeros(100, dtype=np.uint8)
@@ -84,20 +80,9 @@ while True:
             nodeOnUpperLeft = False
 
     # links unten
-    imageslice2 = background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf, :]
-    mask2 = np.copy(imageslice2)
+    imageslice2 = background[cameraHeightHalf:cameraHeight, 0:cameraWidthThird, :]
+    mask2 = createMask(imageslice2)
 
-    # Erstellung einer Maske durch HSV-Farberkennung
-    hsv = cv2.cvtColor(mask2, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
-    hslice = cv2.medianBlur(hslice, msize)
-    sslice = cv2.inRange(s, 60, 120)
-    sslice = cv2.medianBlur(sslice, msize)
-    mask2 = cv2.bitwise_and(hslice, sslice)
-
-    # Contour-Erkennung
-    # Größte Contour berechnen. Falls groß genug -> trigger
     contours, hierarchy = cv2.findContours(mask2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) > 0:
         contourLength = np.zeros(100, dtype=np.uint8)
@@ -115,19 +100,8 @@ while True:
 
     # rechts oben
     imageslice3 = background[0:cameraHeightHalf, cameraWidthHalf+cameraWidthSixth:cameraWidth, :]
-    mask3 = np.copy(imageslice3)
+    mask3 = createMask(imageslice3)
 
-    # Erstellung einer Maske durch HSV-Farberkennung
-    hsv = cv2.cvtColor(mask3, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
-    hslice = cv2.medianBlur(hslice, msize)
-    sslice = cv2.inRange(s, 60, 120)
-    sslice = cv2.medianBlur(sslice, msize)
-    mask3 = cv2.bitwise_and(hslice, sslice)
-
-    # Contour-Erkennung
-    # Größte Contour berechnen. Falls groß genug -> trigger
     contours, hierarchy = cv2.findContours(mask3, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) > 0:
         contourLength = np.zeros(100, dtype=np.uint8)
@@ -144,20 +118,9 @@ while True:
             nodeOnUpperRight = False
 
     # rechts unten
-    imageslice4 = background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth, :]
-    mask4 = np.copy(imageslice4)
+    imageslice4 = background[cameraHeightHalf:cameraHeight, cameraWidthHalf+cameraWidthSixth:cameraWidth, :]
+    mask4 = createMask(imageslice4)
 
-    # Erstellung einer Maske durch HSV-Farberkennung
-    hsv = cv2.cvtColor(mask4, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
-    hslice = cv2.medianBlur(hslice, msize)
-    sslice = cv2.inRange(s, 60, 120)
-    sslice = cv2.medianBlur(sslice, msize)
-    mask4 = cv2.bitwise_and(hslice, sslice)
-
-    # Contour-Erkennung
-    # Größte Contour berechnen. Falls groß genug -> trigger
     contours, hierarchy = cv2.findContours(mask4, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) > 0:
         contourLength = np.zeros(100, dtype=np.uint8)
@@ -172,18 +135,33 @@ while True:
         else:
             nodeOnLowerRight = False
 
-    #######################################################################
     # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-    added_image1 = cv2.addWeighted(imageslice1, alpha, foreground1[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
-    added_image2 = cv2.addWeighted(imageslice2, alpha, foreground2[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
-    added_image3 = cv2.addWeighted(background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth, :], alpha, foreground3[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
-    added_image4 = cv2.addWeighted(background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth, :], alpha, foreground4[0:cameraHeightHalf, 0:cameraWidthHalf, :], 1 - alpha, 0)
+    added_image1 = cv2.addWeighted(imageslice1, alpha, foreground1[0:cameraHeightHalf, 0:cameraWidthThird, :], 1 - alpha, 0)
+    added_image5 = cv2.addWeighted(background[0:cameraHeightThird, 0:cameraWidthThird+cameraWidthSixth, :], alpha, foreground1[0:cameraHeightThird, 0:cameraWidthThird+cameraWidthSixth, :], 1 - alpha, 0)
+
+    added_image2 = cv2.addWeighted(imageslice2, alpha, foreground2[cameraHeightHalf:cameraHeight, 0:cameraWidthThird, :], 1 - alpha, 0)
+    added_image6 = cv2.addWeighted(background[cameraHeightHalf + cameraHeightSixth:cameraHeight, cameraWidthThird:cameraWidthHalf, :], alpha, foreground2[cameraHeightHalf + cameraHeightSixth:cameraHeight, cameraWidthThird:cameraWidthHalf, :], 1 - alpha, 0)
+
+    added_image3 = cv2.addWeighted(imageslice3, alpha, foreground3[0:cameraHeightHalf, cameraWidthHalf+cameraWidthSixth:cameraWidth, ], 1 - alpha, 0)
+    added_image7 = cv2.addWeighted(background[0:cameraHeightThird, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :], alpha, foreground3[0:cameraHeightThird, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :], 1 - alpha, 0)
+
+    added_image4 = cv2.addWeighted(imageslice4, alpha, foreground4[cameraHeightHalf:cameraHeight, cameraWidthHalf+cameraWidthSixth:cameraWidth, :], 1 - alpha, 0)
+    added_image8 = cv2.addWeighted(background[cameraHeightHalf+cameraHeightSixth:cameraHeight, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :], alpha, foreground4[cameraHeightHalf+cameraHeightSixth:cameraHeight, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :], 1 - alpha, 0)
+    
 
     # Change the region with the result
-    background[0:cameraHeightHalf, 0:cameraWidthHalf] = added_image1
-    background[cameraHeightHalf:cameraHeight, 0:cameraWidthHalf] = added_image2
-    background[0:cameraHeightHalf, cameraWidthHalf:cameraWidth] = added_image3
-    background[cameraHeightHalf:cameraHeight, cameraWidthHalf:cameraWidth] = added_image4
+    background[0:cameraHeightHalf, 0:cameraWidthThird] = added_image1
+    background[0:cameraHeightThird, 0:cameraWidthThird+cameraWidthSixth] = added_image5
+
+    background[cameraHeightHalf:cameraHeight, 0:cameraWidthThird] = added_image2
+    background[cameraHeightHalf + cameraHeightSixth:cameraHeight, cameraWidthThird:cameraWidthHalf, :] = added_image6
+
+    background[0:cameraHeightHalf, cameraWidthHalf+cameraWidthSixth:cameraWidth] = added_image3
+    background[0:cameraHeightThird, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :] = added_image7
+
+    background[cameraHeightHalf:cameraHeight, cameraWidthHalf+cameraWidthSixth:cameraWidth] = added_image4
+    background[cameraHeightHalf+cameraHeightSixth:cameraHeight, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth] = added_image8
+
 
     if nodeOnUpperLeftHasChanged:
         midi.send_control_change(1)
