@@ -8,7 +8,7 @@ def createMask(imageslice):
     # Erstellung einer Maske durch HSV-Farberkennung
     hsv = cv2.cvtColor(mask, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
+    hslice = cv2.inRange(h, 50, 80)
     hslice = cv2.medianBlur(hslice, msize)
     sslice = cv2.inRange(s, 60, 120)
     sslice = cv2.medianBlur(sslice, msize)
@@ -81,7 +81,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -96,7 +96,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask5, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -119,7 +119,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -134,7 +134,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask6, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -157,7 +157,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask3, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -172,7 +172,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask7, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -195,7 +195,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask4, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
@@ -209,7 +209,7 @@ while True:
 
         contours, hierarchy = cv2.findContours(mask8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            contourLength = np.zeros(100, dtype=np.uint8)
+            contourLength = np.zeros(300, dtype=np.uint8)
             for index in range(len(contours)):
                 contourLength[index] = cv2.contourArea(contours[index])
             maxlength = np.max(contourLength)
