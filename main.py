@@ -2,6 +2,18 @@ import cv2
 import numpy as np
 import midi
 
+def createMask(imageslice):
+    mask = np.copy(imageslice)
+
+    # Erstellung einer Maske durch HSV-Farberkennung
+    hsv = cv2.cvtColor(mask, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    hslice = cv2.inRange(h, 50, 70)
+    hslice = cv2.medianBlur(hslice, msize)
+    sslice = cv2.inRange(s, 60, 120)
+    sslice = cv2.medianBlur(sslice, msize)
+    mask = cv2.bitwise_and(hslice, sslice)
+    return mask
 
 # Open the camera
 cap = cv2.VideoCapture(0)
@@ -13,15 +25,27 @@ cameraHeight = int(round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 cameraWidthHalf = int(round(cameraWidth)) // 2
 cameraWidthThird = int(round(cameraWidth)) // 3
 cameraWidthSixth = int(round(cameraWidth)) // 6
+cameraWidthEighth = int(round(cameraWidth)) // 8
 
 cameraHeightHalf = int(round(cameraHeight)) // 2
 cameraHeightThird = int(round(cameraHeight)) // 3
 cameraHeightSixth = int(round(cameraHeight)) // 6
+cameraHeightEighth = int(round(cameraHeight)) // 8
 
 foreground1 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 255
 foreground2 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 175
 foreground3 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 100
 foreground4 = np.ones((cameraHeight, cameraWidth, 3), dtype='uint8') * 70
+
+crash_image = cv2.imread('images/crash.png', cv2.IMREAD_COLOR)
+hihat_image = cv2.imread('images/hihat.png', cv2.IMREAD_COLOR)
+bassdrum_image = cv2.imread('images/bd.png', cv2.IMREAD_COLOR)
+snaredrum_image = cv2.imread('images/sd.png', cv2.IMREAD_COLOR)
+
+crash_image_resized = cv2.resize(crash_image, (cameraWidthEighth, cameraHeightEighth))
+hihat_image_resized = cv2.resize(hihat_image, (cameraWidthEighth, cameraHeightEighth))
+bassdrum_image_resized = cv2.resize(bassdrum_image, (cameraWidthEighth, cameraHeightEighth))
+snaredrum_image_resized = cv2.resize(snaredrum_image, (cameraWidthEighth, cameraHeightEighth))
 
 # Set initial value of weights
 alpha = 0.7
@@ -38,20 +62,6 @@ nodeOnUpperLeftHasChanged = False
 nodeOnUpperRightHasChanged = False
 nodeOnLowerLeftHasChanged = False
 nodeOnLowerRightHasChanged = False
-
-
-def createMask(imageslice):
-    mask = np.copy(imageslice)
-
-    # Erstellung einer Maske durch HSV-Farberkennung
-    hsv = cv2.cvtColor(mask, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    hslice = cv2.inRange(h, 50, 70)
-    hslice = cv2.medianBlur(hslice, msize)
-    sslice = cv2.inRange(s, 60, 120)
-    sslice = cv2.medianBlur(sslice, msize)
-    mask = cv2.bitwise_and(hslice, sslice)
-    return mask
 
             
 while True:
@@ -229,8 +239,20 @@ while True:
     added_image4 = cv2.addWeighted(imageslice4, alpha, foreground4[cameraHeightHalf:cameraHeight, cameraWidthHalf+cameraWidthSixth:cameraWidth, :], 1 - alpha, 0)
     added_image8 = cv2.addWeighted(imageslice8, alpha, foreground4[cameraHeightHalf+cameraHeightSixth:cameraHeight, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth, :], 1 - alpha, 0)
     
+    # Hihat Image, oben links
+    added_image9 = cv2.addWeighted(imageslice1[0:hihat_image_resized.shape[0], 0:hihat_image_resized.shape[1], :], 0, hihat_image_resized , 1, 0)
+
+    # Crash Image, oben rechts
+    added_image10 = cv2.addWeighted(imageslice3[0:crash_image_resized.shape[0], 0:crash_image_resized.shape[1], :], 0, crash_image_resized , 1, 0)
+
+    # Bassdrum Image, unten links
+    added_image11 = cv2.addWeighted(imageslice2[0:bassdrum_image_resized.shape[0], 0:bassdrum_image_resized.shape[1], :], 0, bassdrum_image_resized , 1, 0)
+
+    # Snaredrum Image, unten links
+    added_image12 = cv2.addWeighted(imageslice4[0:snaredrum_image_resized.shape[0], 0:snaredrum_image_resized.shape[1], :], 0, snaredrum_image_resized , 1, 0)
 
     # Change the region with the result
+    # Zones
     background[0:cameraHeightHalf, 0:cameraWidthThird] = added_image1
     background[0:cameraHeightThird, 0:cameraWidthThird+cameraWidthSixth] = added_image5
 
@@ -242,6 +264,12 @@ while True:
 
     background[cameraHeightHalf:cameraHeight, cameraWidthHalf+cameraWidthSixth:cameraWidth] = added_image4
     background[cameraHeightHalf+cameraHeightSixth:cameraHeight, cameraWidthHalf:cameraWidthHalf+cameraWidthSixth] = added_image8
+
+    # Drum images
+    background[0:hihat_image_resized.shape[0], 0:hihat_image_resized.shape[1]] = added_image9
+    background[0:crash_image_resized.shape[0], cameraWidth - crash_image_resized.shape[1]:cameraWidth] = added_image10
+    background[cameraHeight - bassdrum_image_resized.shape[0]: cameraHeight, 0:bassdrum_image_resized.shape[1]] = added_image11
+    background[cameraHeight - snaredrum_image_resized.shape[0]: cameraHeight, cameraWidth - bassdrum_image_resized.shape[1]:cameraWidth] = added_image12
 
 
     if nodeOnUpperLeftHasChanged:
