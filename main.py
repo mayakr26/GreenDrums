@@ -40,10 +40,10 @@ msize = 5
 csize = 5
 
 # variables
-nodeOnUpperLeft = False
-nodeOnUpperRight = False
-nodeOnLowerLeft = False
-nodeOnLowerRight = False
+nodeOnUpperLeft = -5
+nodeOnUpperRight = -5
+nodeOnLowerLeft = -5
+nodeOnLowerRight = -5
 
 nodeOnUpperLeftHasChanged = False
 nodeOnUpperRightHasChanged = False
@@ -88,12 +88,16 @@ while True:
     top_left_hihat = background[0:cameraHeightThird, 0:cameraWidthThird + cameraWidthSixth, :]
 
     if create_image_layer(create_mask(top_left_corner)):
-        if not nodeOnUpperLeft:
+        vorher = nodeOnUpperLeft
+        if nodeOnUpperLeft + 1 <= 5:
+            nodeOnUpperLeft += 1
+
+        if vorher == 0 and nodeOnUpperLeft == 1:
             print('links oben')
             nodeOnUpperLeftHasChanged = True
-        nodeOnUpperLeft = True
     else:
-        nodeOnUpperLeft = False
+        if nodeOnUpperLeft - 1 > -5:
+            nodeOnUpperLeft -= 1
 
     # bottom left
     bottom_left_corner = background[cameraHeightHalf:cameraHeight, 0:cameraWidthThird, :]
@@ -101,24 +105,32 @@ while True:
                            cameraWidthThird:cameraWidthHalf, :]
 
     if create_image_layer(create_mask(bottom_left_corner)):
-        if not nodeOnLowerLeft:
+        vorher = nodeOnLowerLeft
+        if nodeOnLowerLeft + 1 <= 5:
+            nodeOnLowerLeft += 1
+
+        if vorher == 0 and nodeOnUpperLeft == 1:
             print('links unten')
             nodeOnLowerLeftHasChanged = True
-        nodeOnLowerLeft = True
     else:
-        nodeOnLowerLeft = False
+        if nodeOnLowerLeft - 1 > -5:
+            nodeOnLowerLeft -= 1
 
     # top right
     top_right_corner = background[0:cameraHeightHalf, cameraWidthHalf + cameraWidthSixth:cameraWidth, :]
     top_right_crash = background[0:cameraHeightThird, cameraWidthHalf:cameraWidthHalf + cameraWidthSixth, :]
 
     if create_image_layer(create_mask(top_right_corner)):
-        if not nodeOnUpperRight:
+        vorher = nodeOnUpperRight
+        if nodeOnUpperRight + 1 <= 5:
+            nodeOnUpperRight += 1
+
+        if vorher == 0 and nodeOnUpperRight == 1:
             print('rechts oben')
             nodeOnUpperRightHasChanged = True
-        nodeOnUpperRight = True
     else:
-        nodeOnUpperRight = False
+        if nodeOnUpperRight - 1 > -5:
+            nodeOnUpperRight -= 1
 
     # bottom right
     bottom_right_corner = background[cameraHeightHalf:cameraHeight, cameraWidthHalf + cameraWidthSixth:cameraWidth,
@@ -127,12 +139,16 @@ while True:
                          cameraWidthHalf:cameraWidthHalf + cameraWidthSixth, :]
 
     if create_image_layer(create_mask(bottom_right_corner)):
-        if not nodeOnLowerRight:
+        vorher = nodeOnLowerRight
+        if nodeOnLowerRight + 1 <= 5:
+            nodeOnLowerRight += 1
+
+        if vorher == 0 and nodeOnLowerRight == 1:
             print('rechts unten')
             nodeOnLowerRightHasChanged = True
-        nodeOnLowerRight = True
     else:
-        nodeOnLowerRight = False
+        if nodeOnLowerRight - 1 > -5:
+            nodeOnLowerRight -= 1
 
     # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
 
@@ -212,16 +228,16 @@ while True:
     cameraWidth - bassdrum_image_resized.shape[1]:cameraWidth] = added_image12
 
     if nodeOnUpperLeftHasChanged:
-        midi.send_control_change(1)
+        midi.send_control_change(4)
         nodeOnUpperLeftHasChanged = False
     if nodeOnLowerLeftHasChanged:
-        midi.send_control_change(2)
+        midi.send_control_change(3)
         nodeOnLowerLeftHasChanged = False
     if nodeOnUpperRightHasChanged:
-        midi.send_control_change(3)
+        midi.send_control_change(1)
         nodeOnUpperRightHasChanged = False
     if nodeOnLowerRightHasChanged:
-        midi.send_control_change(4)
+        midi.send_control_change(2)
         nodeOnLowerRightHasChanged = False
 
     cv2.imshow('Projekt', background)
