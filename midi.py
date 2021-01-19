@@ -11,7 +11,7 @@ import platform
 
 # Windows
 if (platform.system() == "Windows"):
-    midiOutput = mido.open_output("Microsoft GS Wavetable Synth 0")
+    midiOutput = mido.open_output("LoopBe Internal MIDI 1")
 
 # MacOS
 if (platform.system() == "Darwin"):
