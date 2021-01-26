@@ -212,16 +212,16 @@ while True:
     cameraWidth - bassdrum_image_resized.shape[1]:cameraWidth] = added_image12
 
     if nodeOnUpperLeftHasChanged:
-        midi.send_control_change(1)
+        midi.send_control_change(4)
         nodeOnUpperLeftHasChanged = False
     if nodeOnLowerLeftHasChanged:
-        midi.send_control_change(2)
+        midi.send_control_change(3)
         nodeOnLowerLeftHasChanged = False
     if nodeOnUpperRightHasChanged:
-        midi.send_control_change(3)
+        midi.send_control_change(1)
         nodeOnUpperRightHasChanged = False
     if nodeOnLowerRightHasChanged:
-        midi.send_control_change(4)
+        midi.send_control_change(2)
         nodeOnLowerRightHasChanged = False
 
     cv2.imshow('Projekt', background)
